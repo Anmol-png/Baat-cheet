@@ -1,4 +1,4 @@
 streamlit
 requests
-gtts
+pyttsx3
 pydub
