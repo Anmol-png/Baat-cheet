@@ -1,11 +1,12 @@
 # ==========================================
-# 🤖 BaatGPT - Streamlit + Groq AI Assistant (Safe API Key)
+# 🤖 BaatGPT - Streamlit + Groq AI Assistant (Offline TTS)
 # ==========================================
 
 import streamlit as st
 import requests
 import tempfile
-from gtts import gTTS
+import pyttsx3
+import os
 
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="BaatGPT Voice Assistant", layout="centered")
@@ -83,12 +84,15 @@ if audio_input is not None:
     st.session_state.conversation_history.append({"role": "assistant", "content": ai_reply})
     st.markdown(f"### 🤖 BaatGPT says:\n{ai_reply}")
 
-    # --- TTS ---
+    # --- TTS using pyttsx3 (offline) ---
     try:
-        tts_path = "baatgpt_reply.mp3"
-        tts = gTTS(ai_reply)
-        tts.save(tts_path)
-        audio_bytes = open(tts_path, "rb").read()
+        tts_engine = pyttsx3.init()
+        tts_engine.save_to_file(ai_reply, "baatgpt_reply.mp3")
+        tts_engine.runAndWait()
+
+        # Read saved audio
+        with open("baatgpt_reply.mp3", "rb") as audio_file:
+            audio_bytes = audio_file.read()
         st.audio(audio_bytes, format="audio/mp3", start_time=0)
     except Exception as e:
         st.warning(f"TTS failed: {e}")
